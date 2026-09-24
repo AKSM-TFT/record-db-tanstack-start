@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T00:00:00.000Z",
+  "title": "Design System: Record database",
+  "extensions": {
+    "colorMeta": {
+      "archive-blue": {
+        "role": "primary",
+        "displayName": "Archive Blue",
+        "canonical": "#1f5b9b",
+        "tonalRamp": ["#102b4b", "#183d68", "#1f5b9b", "#4d83bb", "#78a9d6", "#a7c6e3", "#d0e1f1", "#eef5fc"]
+      },
+      "archive-ground": {
+        "role": "neutral",
+        "displayName": "Archive Ground",
+        "canonical": "#f4f7fa",
+        "tonalRamp": ["#172638", "#34475a", "#5d6d80", "#9aa8b7", "#c4cfda", "#dfe6ed", "#eef2f6", "#f4f7fa"]
+      },
+      "archive-blue-soft": {
+        "role": "secondary",
+        "displayName": "Archive Blue Soft",
+        "canonical": "#e6effb",
+        "tonalRamp": ["#173252", "#244d77", "#356b9b", "#6f9dc6", "#a5c1dc", "#cbddef", "#e6effb", "#f5f9fd"]
+      },
+      "archive-ink": {
+        "role": "neutral",
+        "displayName": "Archive Ink",
+        "canonical": "#172638",
+        "tonalRamp": ["#0c1726", "#172638", "#30445a", "#5d6d80", "#8b9aaa", "#b8c3ce", "#d9e0e7", "#f4f7fa"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Archive Display", "purpose": "The login introduction headline only." },
+      "headline": { "displayName": "Page Headline", "purpose": "Authenticated page titles." },
+      "body": { "displayName": "Workbench Body", "purpose": "Descriptions, form copy, and table content." },
+      "mono": { "displayName": "Record Identifier", "purpose": "Record IDs and compact metadata." }
+    },
+    "shadows": [
+      {
+        "name": "panel-ambient",
+        "value": "0 1px 2px rgba(23, 38, 56, 0.04), 0 8px 24px rgba(23, 38, 56, 0.05)",
+        "purpose": "Separates record, detail, and form panels from the cool page ground."
+      },
+      {
+        "name": "button-lift",
+        "value": "0 1px 2px rgba(23, 38, 56, 0.08)",
+        "purpose": "Adds a restrained physical edge to primary action buttons."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "160ms ease",
+        "purpose": "Communicates row hover, focus, and control state changes without decorative choreography."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "600px" },
+      { "name": "compact", "value": "720px" },
+      { "name": "tablet", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The cobalt action used for record creation and form submission.",
+      "html": "<button class=\"ds-btn-primary\">Save record</button>",
+      "css": ".ds-btn-primary { background: #1f5b9b; color: #fff; border: 0; border-radius: 6px; padding: 10px 16px; font: 600 14px/20px 'IBM Plex Sans', sans-serif; box-shadow: 0 1px 2px rgba(23,38,56,.08); transition: background 160ms ease, box-shadow 160ms ease; } .ds-btn-primary:hover { background: #194c82; } .ds-btn-primary:focus-visible { outline: 2px solid rgba(77,131,187,.45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A quiet secondary action for cancel and navigation-adjacent choices.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { background: #fff; color: #172638; border: 1px solid #d7e0ea; border-radius: 6px; padding: 10px 16px; font: 600 14px/20px 'IBM Plex Sans', sans-serif; transition: background 160ms ease, border-color 160ms ease; } .ds-btn-outline:hover { background: #e6effb; border-color: #b9cde2; } .ds-btn-outline:focus-visible { outline: 2px solid rgba(77,131,187,.45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A compact white field with a blue keyboard focus state.",
+      "html": "<label class=\"ds-field\"><span>Title</span><input class=\"ds-input\" placeholder=\"e.g. Annual check-in\" /></label>",
+      "css": ".ds-field { display: grid; gap: 6px; color: #172638; font: 600 13px/16px 'IBM Plex Sans', sans-serif; } .ds-input { height: 40px; border: 1px solid #c5d1de; border-radius: 6px; background: #fff; color: #172638; padding: 0 12px; font: 400 14px/20px 'IBM Plex Sans', sans-serif; } .ds-input::placeholder { color: #5d6d80; } .ds-input:focus { border-color: #4d83bb; outline: 2px solid rgba(77,131,187,.2); outline-offset: 0; }"
+    },
+    {
+      "name": "Record Panel",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A bordered white surface that groups a record collection and its toolbar.",
+      "html": "<section class=\"ds-record-panel\"><div class=\"ds-record-toolbar\"><strong>Assigned records</strong><span>2 records</span></div><div class=\"ds-record-rule\"></div></section>",
+      "css": ".ds-record-panel { overflow: hidden; border: 1px solid #d7e0ea; border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(23,38,56,.04), 0 8px 24px rgba(23,38,56,.05); } .ds-record-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; color: #172638; font: 700 15px/20px 'IBM Plex Sans', sans-serif; } .ds-record-toolbar span { border: 1px solid #c8d9eb; border-radius: 999px; background: #e6effb; color: #1f5b9b; padding: 4px 10px; font: 600 11px/16px 'IBM Plex Sans', sans-serif; } .ds-record-rule { height: 1px; background: #d7e0ea; }"
+    },
+    {
+      "name": "Application Bar",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "The persistent role-aware workspace header.",
+      "html": "<header class=\"ds-app-bar\"><strong>Record database</strong><span>Clinic staff workspace</span></header>",
+      "css": ".ds-app-bar { display: flex; align-items: center; justify-content: space-between; min-height: 72px; padding: 0 24px; border-bottom: 1px solid #d7e0ea; background: #fff; color: #172638; font: 600 14px/20px 'IBM Plex Sans', sans-serif; } .ds-app-bar span { color: #5d6d80; font-size: 12px; } .ds-app-bar:focus-within { outline: 2px solid rgba(77,131,187,.25); outline-offset: -2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Clinical Archive",
+    "overview": "This system treats the application as a working records office rather than a health marketing site. The visual language is cool, precise, and quiet: a pale mineral ground supports white record surfaces, ink-blue hierarchy, one-pixel rules, and a single cobalt action color. It is intentionally light-first because the core users are scanning records, entering notes, and making decisions in a browser workspace.",
+    "keyCharacteristics": [
+      "Record-first information architecture with a visible collection count.",
+      "Cool paper surfaces and precise blue-black hierarchy.",
+      "Compact sans typography with tabular IDs and dates.",
+      "Restrained elevation: borders and soft ambient shadows, never decorative gloss.",
+      "Responsive tables that preserve titles and actions on small screens."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Archive Blue is reserved for the action or state that helps a user complete the current task; it is not used as decoration.", "section": "colors" },
+      { "name": "The Scan Rule", "body": "IDs and dates use tabular numerals and a compact mono treatment so a record row can be scanned without decoding decorative typography.", "section": "typography" }
+    ],
+    "dos": [
+      "Do use Archive Blue only for primary actions, focus, links, and compact state emphasis.",
+      "Do keep the record count and collection title visible before the table body.",
+      "Do use tabular numerals and IBM Plex Mono for IDs and dates.",
+      "Do preserve one-pixel rules and soft ambient shadows around functional panels.",
+      "Do test the real table at 390px and keep the title/action path reachable."
+    ],
+    "donts": [
+      "Don't use gradients, glass, glows, or decorative blobs to create hierarchy.",
+      "Don't use a serif display face for product labels or record data.",
+      "Don't hide record IDs, titles, or actions behind hover-only controls.",
+      "Don't add clinical claims, production-security claims, or mock record content.",
+      "Don't replace standard form and dialog affordances with custom interaction patterns."
+    ]
+  }
+}

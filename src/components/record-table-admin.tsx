@@ -1,99 +1,164 @@
-import type { AdminRecord } from '#/db/schema'
 import { EditIcon, Table as TableIcon, Trash2Icon } from 'lucide-react'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from './ui/empty'
-import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from './ui/table'
 import { Link, useRouter } from '@tanstack/react-router'
-import { Button } from './ui/button'
-import { ActionButton } from './ui/action-button'
 import { useServerFn } from '@tanstack/react-start'
+
+import type { AdminRecord } from '#/db/schema'
+import { RecordSectionHeader } from '#/components/record-shell'
+import { ActionButton } from '#/components/ui/action-button'
+import { Button } from '#/components/ui/button'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '#/components/ui/empty'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '#/components/ui/table'
 import { deleteRecordById } from '#/services/records'
 
 export function RecordTableAdmin({ records }: { records: AdminRecord[] }) {
-    if (records.length === 0) {
-        return (
-            <Empty className="border border-dashed">
-                <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                        <TableIcon />
-                    </EmptyMedia>
-                    <EmptyTitle>No Records</EmptyTitle>
-                    <EmptyDescription>You are healthy!</EmptyDescription>
-                </EmptyHeader>
-            </Empty>
-        )
-    } else {
-        return (
-            <Table>
-                <TableHeader>
-                    <TableRow className="hover: bg-transparent">
-                        <TableHead>Record ID</TableHead>
-                        <TableHead>Patient</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Created On</TableHead>
-                        <TableHead className="w-0"></TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {records.map(record => (
-                        <RecordTableRow key={record.id} record={record} />
-                    ))}
-                </TableBody>
-            </Table>
-        )
-    }
+  if (records.length === 0) {
+    return (
+      <section className="records-section" aria-label="Assigned records">
+        <RecordSectionHeader
+          count={0}
+          description="Records for patients assigned to your account"
+          title="Assigned records"
+        />
+        <div className="records-section__empty">
+          <Empty className="empty-state">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <TableIcon aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyTitle>No assigned records</EmptyTitle>
+              <EmptyDescription>
+                Records for your assigned patients will appear here. Use Add
+                record to create the first one.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="records-section" aria-label="Assigned records">
+      <RecordSectionHeader
+        count={records.length}
+        description="Records for patients assigned to your account"
+        title="Assigned records"
+      />
+      <div className="records-table-scroll">
+        <Table className="records-table records-table--admin">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Record ID</TableHead>
+              <TableHead>Patient</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead>
+                <span className="sr-only">Actions</span>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {records.map((record) => (
+              <RecordTableRow key={record.id} record={record} />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </section>
+  )
 }
 
 function RecordTableRow({ record }: { record: AdminRecord }) {
-    const { id, name, title, createdAt } = record
-    const router = useRouter()
-    const deleteFn = useServerFn(deleteRecordById)
+  const { id, name, title, createdAt } = record
+  const router = useRouter()
+  const deleteFn = useServerFn(deleteRecordById)
 
-    return (
-        <TableRow>
-                <TableCell className="font-medium">
-                    {id}
-                </TableCell>
-                <TableCell className="font-medium">
-                    {name}
-                </TableCell>
-                <TableCell className="font-medium">
-                    {title}
-                </TableCell>
-                <TableCell className="test-sm text-muted-foreground">
-                    {formatDate(createdAt)}
-                </TableCell>
-                <TableCell data-actions>
-                    <div className="flex items-cnter justify-end gap-1">
-                        <Button variant="ghost" size="icon-sm" asChild>
-                            <Link to="/staff/$id/edit" params={{ id }}>
-                                <EditIcon />
-                            </Link>
-                        </Button>
-                        <ActionButton action={async () => {
-                            const hasConfirmed = window.confirm("Are you sure you want to delete this record?")
-
-                            if (!hasConfirmed) {
-                                return { error: true, message: "User cancelled action."}
-                            } 
-
-                            const res = await deleteFn({ data: { id } })
-                            router.invalidate()
-                            return res
-                        }}
-                            variant="destructive"
-                            size="icon-sm">
-                            <Trash2Icon />
-                        </ActionButton>
-                    </div>
-                </TableCell>
-            </TableRow>
-    )
+  return (
+    <TableRow>
+      <TableCell>
+        <span className="record-id" title={id}>
+          {id}
+        </span>
+      </TableCell>
+      <TableCell>
+        <span className="record-patient">{name ?? 'Unassigned patient'}</span>
+        <span className="record-id record-id--mobile" title={id}>
+          {id}
+        </span>
+      </TableCell>
+      <TableCell>
+        <Link
+          aria-label={`Edit record ${title}`}
+          className="record-title-link"
+          params={{ id }}
+          to="/staff/$id/edit"
+        >
+          {title}
+        </Link>
+      </TableCell>
+      <TableCell>
+        <time className="record-date" dateTime={createdAt?.toISOString()}>
+          {formatDate(createdAt)}
+        </time>
+      </TableCell>
+      <TableCell>
+        <div className="record-actions">
+          <Button
+            aria-label={`Edit record ${title}`}
+            asChild
+            size="icon-sm"
+            title="Edit record"
+            variant="ghost"
+          >
+            <Link params={{ id }} to="/staff/$id/edit">
+              <EditIcon aria-hidden="true" />
+            </Link>
+          </Button>
+          <ActionButton
+            action={async () => {
+              try {
+                const response = await deleteFn({ data: { id } })
+                await router.invalidate()
+                return response
+              } catch {
+                return {
+                  error: true,
+                  message: 'Unable to delete this record. Please try again.',
+                }
+              }
+            }}
+            areYouSureDescription={`Delete “${title}”? This action cannot be undone.`}
+            aria-label={`Delete record ${title}`}
+            requireAreYouSure
+            size="icon-sm"
+            title="Delete record"
+            variant="ghost"
+          >
+            <Trash2Icon aria-hidden="true" />
+          </ActionButton>
+        </div>
+      </TableCell>
+    </TableRow>
+  )
 }
 
 function formatDate(date: Date | null) {
-    const formatter = new Intl.DateTimeFormat(undefined, {
-        dateStyle: "short"
-    })
+  if (!date) return '—'
 
-    return formatter.format(date!)
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+  }).format(date)
 }

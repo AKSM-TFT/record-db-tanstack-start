@@ -1,4 +1,8 @@
-import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
@@ -6,12 +10,11 @@ import appCss from '../styles.css?url'
 import type { AuthContext } from '#/db/schema'
 import { fetchSessionUser } from '#/services/auth'
 
-
 export const Route = createRootRouteWithContext<AuthContext>()({
   beforeLoad: async () => {
     try {
       const user = await fetchSessionUser()
-      
+
       return { user, isAuthenticated: true }
     } catch {
       return { user: null, isAuthenticated: false }
@@ -27,7 +30,12 @@ export const Route = createRootRouteWithContext<AuthContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Record database',
+      },
+      {
+        name: 'description',
+        content:
+          'A focused record database workspace for patients and clinic staff.',
       },
     ],
     links: [
@@ -42,7 +50,7 @@ export const Route = createRootRouteWithContext<AuthContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
