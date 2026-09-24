@@ -72,7 +72,7 @@ export const deleteRecordById = createServerFn({ method: "POST" })
     })).handler(async ({ data }) => {
         await db
             .delete(patientRecordsTable)
-            .where(eq(patientRecordsTable, data.id))
+            .where(eq(patientRecordsTable.id, data.id))
 
         return { error: false }
     })
@@ -93,12 +93,77 @@ export const editRecordById = createServerFn({ method: "POST" })
 
 export const addRecord = createServerFn({ method: "POST" })
     .validator(z.object({
-        title: z.string(),
-        description: z.string(),
+        title: z.string().min(1),
+        description: z.string().optional(),
+        patientId: z.string().uuid()
     })).handler(async ({ data }) => {
-        // await db
-        //     .insert(patientRecordsTable)
-        //     .values({ ...data })
+        await db
+            .insert(patientRecordsTable)
+            .values({ 
+                title: data.title,
+                description: data.description,
+                patientId: data.patientId
+             })
 
         return { error: false }
+    })
+
+
+export const fetchRecordsWithName = createServerFn({ method: "GET" })
+    .validator(z.object({
+        id: z.string().uuid()
+    })).handler(async ({ data }) => {
+        const assigned_patients = db
+            .select({
+                patientId: recordAssignmentTable.patientId
+            })
+            .from(recordAssignmentTable)
+            .where(eq(recordAssignmentTable.staffId, data.id))
+
+        const recordsWithName = await db
+            .select({
+                id: patientRecordsTable.id,
+                patientId: patientRecordsTable.patientId,
+                title: patientRecordsTable.title,
+                description: patientRecordsTable.description,
+                createdAt: patientRecordsTable.createdAt,
+                name: usersTable.name,
+            })
+            .from(patientRecordsTable)
+            .leftJoin(usersTable, eq(patientRecordsTable.patientId, usersTable.id))
+            .where(inArray(patientRecordsTable.patientId, assigned_patients))
+
+        console.log(recordsWithName)
+
+        return recordsWithName.map(row => ({
+            ...row,
+            name: row.name ?? undefined,
+        }));
+    })
+
+export const fetchUsersWithName = createServerFn({ method: "GET" })
+    .validator(z.object({
+        id: z.string().uuid()
+    })).handler(async ({ data }) => {
+        const assigned_patients = db
+            .select({
+                patientId: recordAssignmentTable.patientId
+            })
+            .from(recordAssignmentTable)
+            .where(eq(recordAssignmentTable.staffId, data.id))
+
+        const uniqueName = await db
+            .select({
+                patientId: usersTable.id,
+                name: usersTable.name,
+            })
+            .from(usersTable)
+            .where(inArray(usersTable.id, assigned_patients))
+
+        console.log(uniqueName)
+
+        return uniqueName.map(row => ({
+            ...row,
+            name: row.name ?? undefined,
+        }));
     })

@@ -1,4 +1,4 @@
-import type { Record } from '#/db/schema'
+import type { AdminRecord } from '#/db/schema'
 import { EditIcon, Table as TableIcon, Trash2Icon } from 'lucide-react'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from './ui/empty'
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from './ui/table'
@@ -8,7 +8,7 @@ import { ActionButton } from './ui/action-button'
 import { useServerFn } from '@tanstack/react-start'
 import { deleteRecordById } from '#/services/records'
 
-export function RecordTableAdmin({ records }: { records: Array<Record> }) {
+export function RecordTableAdmin({ records }: { records: AdminRecord[] }) {
     if (records.length === 0) {
         return (
             <Empty className="border border-dashed">
@@ -43,8 +43,8 @@ export function RecordTableAdmin({ records }: { records: Array<Record> }) {
     }
 }
 
-function RecordTableRow({ record }: { record: Record }) {
-    const { id, patientId, title, createdAt } = record
+function RecordTableRow({ record }: { record: AdminRecord }) {
+    const { id, name, title, createdAt } = record
     const router = useRouter()
     const deleteFn = useServerFn(deleteRecordById)
 
@@ -54,7 +54,7 @@ function RecordTableRow({ record }: { record: Record }) {
                     {id}
                 </TableCell>
                 <TableCell className="font-medium">
-                    {patientId}
+                    {name}
                 </TableCell>
                 <TableCell className="font-medium">
                     {title}
@@ -70,6 +70,12 @@ function RecordTableRow({ record }: { record: Record }) {
                             </Link>
                         </Button>
                         <ActionButton action={async () => {
+                            const hasConfirmed = window.confirm("Are you sure you want to delete this record?")
+
+                            if (!hasConfirmed) {
+                                return { error: true, message: "User cancelled action."}
+                            } 
+
                             const res = await deleteFn({ data: { id } })
                             router.invalidate()
                             return res

@@ -42,3 +42,10 @@ export interface AuthContext {
 export const RecordSchema = createSelectSchema(patientRecordsTable)
 
 export type Record = z.infer<typeof RecordSchema>
+
+export const AdminRecordSchema = createSelectSchema(patientRecordsTable)
+  .extend({
+    name: z.string().optional()
+  })
+
+export type AdminRecord = z.infer<typeof AdminRecordSchema>

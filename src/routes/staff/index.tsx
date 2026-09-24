@@ -1,7 +1,8 @@
 import { RecordTableAdmin } from '#/components/record-table-admin'
 import { Button } from '#/components/ui/button'
+import { AdminRecordSchema } from '#/db/schema'
 import { logoutFn } from '#/services/auth'
-import { fetchAssignedRecords } from '#/services/records'
+import { fetchRecordsWithName } from '#/services/records'
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
 
@@ -17,11 +18,12 @@ export const Route = createFileRoute('/staff/')({
   loader: async ({ context }) => {
     if (!context.user) throw new Error("Unauthorized")
 
-    const records = await fetchAssignedRecords({
+    const records = await fetchRecordsWithName({
       data: { id: context.user.id }
     })
 
     console.log(records)
+    console.log(AdminRecordSchema)
 
     return records
   },
@@ -31,7 +33,6 @@ export const Route = createFileRoute('/staff/')({
 function RouteComponent() {
   const router = useRouter()
   const { user } = Route.useRouteContext()
-
   const records = Route.useLoaderData()
 
   async function handleLogout() {
@@ -48,7 +49,7 @@ function RouteComponent() {
           <h1 className="text-4xl font-bold">Welcome, {user?.name || 'Patient'}</h1>
         </div>
         <div className="flex gap-2">
-          <Button size="lg" onClick={() => router.navigate({ to: "/staff/new"})}>
+          <Button size="lg" onClick={() => router.navigate({ to: "/staff/new" })}>
               <PlusIcon /> Add Record
           </Button>
           <Button size="lg" variant="destructive" onClick={() => handleLogout()}>

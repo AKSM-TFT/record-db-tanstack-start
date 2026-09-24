@@ -1,10 +1,11 @@
 import { Button } from '#/components/ui/button'
 import { Textarea } from '#/components/ui/textarea'
 import { useForm } from '@tanstack/react-form'
-import { addRecord } from '#/services/records'
+import { addRecord, fetchUsersWithName } from '#/services/records'
 import { createFileRoute, Link, redirect, useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '#/components/ui/select'
 
 export const Route = createFileRoute('/staff/new')({
     beforeLoad: ({ context, location }) => {
@@ -15,6 +16,15 @@ export const Route = createFileRoute('/staff/new')({
             })
         }
     },
+    loader: async ({ context }) => {
+        if (!context.user) throw new Error("Unauthorized")
+
+        const uniqueNames = await fetchUsersWithName({
+            data: { id: context.user.id }
+        })
+
+        return uniqueNames
+    },
     component: RouteComponent,
 })
 
@@ -22,19 +32,20 @@ function RouteComponent() {
     const router = useRouter()
     const addRecordFn = useServerFn(addRecord)
     const [error, setError] = useState<string | null>(null)
+    const uniqueNames = Route.useLoaderData()
 
     const form = useForm({
         defaultValues: {
             title: '',
-            patientID: '',
+            patientId: '',
             description: '',
         },
         onSubmit: async ({ value }) => {
             setError(null)
             const response = await addRecord({ data: value })
-            
+
             if (!response.error) {
-                await router.navigate({ to: "/staff"})
+                await router.navigate({ to: "/staff" })
             } else {
                 setError("Unable to edit!")
             }
@@ -53,6 +64,33 @@ function RouteComponent() {
                     form.handleSubmit()
                 }}
             >
+                <div className="mb-2">
+                    <label>
+                        Patient:
+                        <form.Field name="patientId">
+                            {(field) => (
+                                <Select
+                                    value={field.state.value}
+                                    onValueChange={field.handleChange}
+                                >
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Patient" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Patients</SelectLabel>
+                                            {uniqueNames.map((patient) => (
+                                                <SelectItem key={patient.patientId} value={patient.patientId}>
+                                                    {patient.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        </form.Field>
+                    </label>
+                </div>
                 <div className="mb-2">
                     <label>
                         Title:
